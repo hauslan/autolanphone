@@ -1,6 +1,25 @@
 {
+  "name": "autolanphone",
+  "version": "1.0.0",
+  "description": "Automation of deployment of LAN phones",
+  "main": "index.js",
   "dependencies": {
     "express": "^4.18.2",
     "js-yaml": "^4.1.0"
-  }
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hauslan/autolanphone.git"
+  },
+  "author": "Ben (nixerus)",
+  "license": "GPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/hauslan/autolanphone/issues"
+  },
+  "homepage": "https://github.com/hauslan/autolanphone#readme"
 }
