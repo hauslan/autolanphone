@@ -10,7 +10,7 @@ function generateRandomPassword() {
     return pass;
 }
 
-function findFurthestAway(x, y) {
+function findFurthestAway(map, x, y) {
     let list = [];
     const name = map[x + ',' + y].name;
     for(const pos in map) {
@@ -64,7 +64,7 @@ module.exports = function(map) {
     
         const x = parseInt(pos.split(',')[0]);
         const y = parseInt(pos.split(',')[1]);
-        const sorted = findFurthestAway(x, y);
+        const sorted = findFurthestAway(map, x, y);
     
         let listPos = 0;
         for(let i = 2; i < 9; i++) {

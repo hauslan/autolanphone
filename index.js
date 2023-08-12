@@ -3,7 +3,7 @@ const ansible = require('./ansible');
 const exp = require('constants');
 
 const app = express();
-const port = process.env['PORT'] || 3000;
+const port = process.env['LAN_PORT'] || 3000;
 
 app.use(express.static('static'));
 app.use(express.json());

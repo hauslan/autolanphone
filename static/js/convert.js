@@ -91,7 +91,10 @@ function mapVenue() {
 
     fetch("/convert", {
         method: "POST",
-        body: JSON.stringify(phones)
+        body: JSON.stringify(phones),
+        headers: {
+            "Content-Type": "application/json"
+        }
     }).then((r) => {
         showMessage(r.ok);
     }).catch((err) => {
