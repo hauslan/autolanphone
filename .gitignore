@@ -1,3 +1,3 @@
-node/node_modules
-node/ansible.yaml
-node/phones.json
+node_modules/
+ansible/ansible.yaml
+ansible/phones.json

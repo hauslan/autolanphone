@@ -1,3 +1,11 @@
+function showMessage(okay) {
+    const color = okay ? "green" : "red";
+    const message = okay ? "Woo! Your ansible is waiting for you" : "Oh no, something went wrong..";
+
+    document.getElementById("convertError").innerHTML = message;
+    document.getElementById("convertError").style.color = color;
+}
+
 function mapVenue() {
     if (localStorage.getItem("data") === undefined) {
         console.error('Data is not defined.');
@@ -80,6 +88,16 @@ function mapVenue() {
             }
         }
     }
+
+    fetch("/convert", {
+        method: "POST",
+        body: JSON.stringify(phones)
+    }).then((r) => {
+        showMessage(r.ok);
+    }).catch((err) => {
+        console.error(err);
+        showMessage(false);
+    });
 
     console.log(JSON.stringify(partners));
     console.log(JSON.stringify(phones));
