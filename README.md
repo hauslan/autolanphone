@@ -1,7 +1,11 @@
 # AutoLanPhone
 Do you have a bunch of old Cisco phones lying around? Do you love the sound of phones ringing up until 4am in the morning? AutoLanPhone is for you!
 
-AutoLanPhone provides a ~~knockoff seat picker~~ state-of-the-art Web application that allows you to design your LAN, placing players, walkways, and most importantly - **phones.**
+AutoLanPhone provides a ~~knockoff seat picker~~ state-of-the-art Web application that allows you to design your LAN party, placing players, walkways, and most importantly - **phones.**
+
+## Screenshot
+
+![screenshot of the planner](https://github.com/hauslan/autolanphone/blob/main/.github/planner.png?raw=true)
 
 ## Installation
 
@@ -47,6 +51,7 @@ Each phone will then be given an incremental extension, and an 8-digit password.
 - [ ] Include Ansible playbooks that use the generated hosts file to allow configuration of phones
 - [ ] Include automation to run Ansible playbook on generation, and restart phones
 - [ ] Ensure generated extension numbers never include emergency numbers, like "999"
+- [ ] Automatically acquire phone MAC address from switch
 - [ ] Allow resizing of planner, to allow for venues of bigger sizes
 - [ ] Allow planner to define groups of people and quick dial rules, in case they have special logic for who they should be able to call (mostly for Artemis)
 - [ ] Maybe some automation to allow importing seating positions?
