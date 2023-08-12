@@ -1,0 +1,16 @@
+table {
+    height: 75%;
+    width: 75%;
+}
+
+table, th, td {
+    border: 1px solid;
+}
+
+td {
+    text-align: center;
+}
+
+body {
+    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+}

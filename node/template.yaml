@@ -1,0 +1,8 @@
+all:
+  children:
+    freepbx:
+      hosts:
+        10.79.253.69:
+    tftp:
+      hosts:
+        10.79.253.69:
