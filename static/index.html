@@ -1,7 +1,7 @@
 <body>
     <h1>AutoLanPhone Planner</h1>
     <link rel="stylesheet" href="/css/main.css">
-    <table id="tab">
+    <table class="plannerTab" id="tab">
         
     </table>
     <br>
@@ -16,11 +16,34 @@
     <button hidden id="rotate" onclick="rotate()">Rotate</button>
     <input hidden type="text" id="user" placeholder="Player name">
     <input hidden type="text" id="phone" placeholder="Phone MAC address">
+    <input hidden type="text" id="extension" placeholder="Extension">
     <select hidden id="phonetype">
         <option value="cisco_7961">Cisco 7961</option>
         <option value="cisco_7970">Cisco 7970</option>
     </select>
     <button hidden onclick="saveData()" id="save">Save</button>
+    <br><br>
+    <button onclick="assignExtensions()">Assign Extensions</button>
+    <button onclick="resetExtensions()">Reset Extensions</button>
+    <br><br>
+    <table id="ships">
+    </table>
+    <br>
+    <input type="text" id="shipAddName" placeholder="ship name">
+    <button onclick="clickAddShip()">Add Ship</button>
+    <br>
+    <table>
+        <tr>
+            <th>Admiral User</th>
+            <th>Admiral Extension</th>
+        </tr>
+        <tr id="admiralRow">
+
+        </tr>
+    </table>
+    <br><br>
+    <input type="checkbox" id="artemisMode" name="artemisMode">
+    <label for="artemisMode">Artemis Mode?</label>
     <br><br>
     <button onclick="mapVenue()">Convert</button>
     <span id="convertError"></span>

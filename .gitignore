@@ -1,2 +1,4 @@
 node_modules/
-ansible/ansible.yaml
+ansible/*
+!ansible/template.yaml
+.env

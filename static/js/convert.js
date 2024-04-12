@@ -6,23 +6,46 @@ function showMessage(okay) {
     document.getElementById("convertError").style.color = color;
 }
 
-function mapVenue() {
-    if (localStorage.getItem("data") === undefined) {
-        console.error('Data is not defined.');
-        return;
-    }
-
-    const map = JSON.parse(localStorage.getItem("data"));
-    let partners = {};
-    let phones = {};
-
-    let extension = 4000;
+function getNextExtension(map) {
+    let extension = 1;
     for (const strX in map) {
         const x = parseInt(strX);
         const row = map[x];
         for (const strY in row) {
             const y = parseInt(strY);
             const seat = row[y];
+            if('extension' in seat && seat.extension !== undefined) {
+                extension = parseInt(seat.extension);
+            }
+        }
+    }
+
+    return extension + 1;
+}
+
+function mapVenue() {
+    if (localStorage.getItem("data") === undefined) {
+        console.error('Data is not defined.');
+        return;
+    }
+
+    const artemisMode = document.getElementById("artemisMode")
+    const map = JSON.parse(localStorage.getItem("data"));
+    const shipsRaw = localStorage.getItem("ships") != null ? JSON.parse(localStorage.getItem("ships")) : {};
+    const admiralRaw = localStorage.getItem("admiral") !== null ? JSON.parse(localStorage.getItem("admiral")) : {user: null, extension: "0"};
+    let partners = {};
+    let phones = {};
+
+    for (const strX in map) {
+        const x = parseInt(strX);
+        const row = map[x];
+        for (const strY in row) {
+            const y = parseInt(strY);
+            const seat = row[y];
+
+            if(seat.walkway || seat.wall)
+                continue;
+
             if (seat.user) {
                 if ((x + "," + y) in partners) {
                     console.log('Seat ' + x + "," + y + " already has a partner.");
@@ -55,6 +78,18 @@ function mapVenue() {
                             partners[x + ',' + y] = x + ',' + (y + 1)
                             partners[x + ',' + (y + 1)] = x + ',' + y;
                         }
+
+                        if (!((y - 1) in row)) {
+                            console.log('Seat ' + x + ',' + y + ' has no partner! (Next seat does not exist.)');
+                        } else if (!row[y - 1].user) {
+                            console.log('Seat ' + x + ',' + y + ' has no partner! (Next seat is not a seat.)');
+                        } else if (row[y - 1].rotated) {
+                            console.log('Seat ' + x + ',' + y + ' has no partner! (Next seat is rotated.)');
+                        } else {
+                            console.log('Seat ' + x + ',' + y + ' has partner at ' + x + ',' + (y - 1));
+                            partners[x + ',' + y] = x + ',' + (y - 1)
+                            partners[x + ',' + (y - 1)] = x + ',' + y;
+                        }
                     }
                 }
             }
@@ -75,6 +110,7 @@ function mapVenue() {
                 const ourName = seat.userName;
                 const mac = 'phoneMAC' in seat ? seat.phoneMAC : 'Unknown';
                 const type = 'phoneType' in seat ? seat.phoneType : 'cisco_7970';
+                const extension = 'extension' in seat ? parseInt(seat.extension) : getNextExtension(map);
                 if(ourName === undefined && partnerName === undefined) {
                     phones[x + ',' + y] = {name: 'Unused', mac: mac, extension: extension, type: type};
                 } else if(ourName !== undefined && partnerName === undefined) {
@@ -84,14 +120,40 @@ function mapVenue() {
                 } else {
                     phones[x + ',' + y] = {name: ourName + ' / ' + partnerName, mac: mac, extension: extension, type: type};
                 }
-                extension++;
             }
         }
     }
 
+    const artemis = {
+        ships: {},
+        admiral: {
+            user: admiralRaw.user,
+            extension: parseInt(admiralRaw.extension)
+        }
+    };
+    for(const shipName in shipsRaw) {
+        const ship = shipsRaw[shipName]
+        artemis.ships[shipName] = {
+            captain: {
+                user: ship['captain'],
+                extension: parseInt(ship['captainExtension'])
+            },
+            comms: {
+                user: ship['comms'],
+                extension: parseInt(ship['commsExtension'])
+            }
+        }
+    }
+
+    const data = {
+        phones: phones,
+        artemis: artemis,
+        mode: artemisMode.checked ? 'artemis' : 'ansible'
+    }
+
     fetch("/convert", {
         method: "POST",
-        body: JSON.stringify(phones),
+        body: JSON.stringify(data),
         headers: {
             "Content-Type": "application/json"
         }

@@ -31,6 +31,13 @@ A player represents a person / setup at your venue. A player can have a name, wh
 
 A phone represents a phone sitting at someone's desk. Each phone should be configured with a MAC address and a phone type. The phone type defaults to a Cisco 7970.
 
+### Artemis Mode
+You're able to create ships, and select a Captain & Comms Officer for each ship. The Comms Officers of each ship can communicate with eachother - the captain can communicate with their comms officers only. You can also add a fleet admiral, who can communicate with all captains (and all captains can communicate back).
+
+When you select Artemis mode and generate the configuration, any users who are part of the game will be given a new config based on their ship.
+
+For extensions for each ship, it's recommended to use a ring group - this way, you can swap out comms/captains for each ship without having to restart each phone.
+
 #### Walls and Walkways
 
 Walls & walkways have no purpose other than for visualisation & decoration.

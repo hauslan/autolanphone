@@ -1,81 +1,50 @@
 const yaml = require('js-yaml');
 const fs = require('fs');
 
-function generateRandomPassword() {
-    const length = 8;
-    let pass = "";
-    for(let i = 0; i < length; i++) {
-        pass += Math.floor(Math.random() * 10);
-    }
-    return pass;
-}
-
-function findFurthestAway(map, x, y) {
-    let list = [];
-    const name = map[x + ',' + y].name;
-    for(const pos in map) {
-        if(map[pos].name !== 'Unused' && map[pos].name !== name) {
-            list.push(pos);
-        }
-    }
-
-    return list.sort((a,b) => {
-        const aX = parseInt(a.split(',')[0]);
-        const aY = parseInt(a.split(',')[1]);
-        const bX = parseInt(b.split(',')[0]);
-        const bY = parseInt(b.split(',')[1]);
-
-        const aDist = Math.abs((aX + aY) - (x + y));
-        const bDist = Math.abs((bX + bY) - (x + y));
-        return aDist - bDist;
-    }).reverse();
-}
-
-module.exports = function(map) {
+module.exports = function (payload) {
+    const modeName = 'mode' in payload ? payload.mode.toLowerCase() : 'ansible';
     let doc = yaml.load(fs.readFileSync('./ansible/template.yaml', 'utf-8'));
-    
+
+    const mode = require('./modes/' + modeName);
+
     let phoneTypes = [];
-    for(const pos in map) {
-        if(phoneTypes.indexOf(map[pos].type) === -1) {
-            phoneTypes.push(map[pos].type);
+    const extensions = {}
+    for (const pos in payload.phones) {
+        const phone = payload.phones[pos];
+        if (phoneTypes.indexOf(payload.phones[pos].type) === -1) {
+            phoneTypes.push(payload.phones[pos].type);
+        }
+
+        if (!('extension' in phone)) {
+            console.error(`${phone.name} has no extension!`);
+            return;
+        } else {
+            extensions[phone.name] = phone.extension;
         }
     }
 
-    for(const type of phoneTypes) {
+    for (const type of phoneTypes) {
         doc.all.children[type] = {};
         doc.all.children[type].hosts = {};
     }
 
-    for(const pos in map) {
-        const phone = map[pos];
-        if(phone.mac === 'Unknown') {
+    doc.all.children["phones"] = {}
+    doc.all.children["phones"].hosts = {}
+
+    for (const pos in payload.phones) {
+        const phone = payload.phones[pos];
+        if (phone.mac === 'Unknown') {
             console.error('Phone with no MAC - skipping.')
             continue;
         }
-    
-        doc.all.children[phone.type].hosts['SEP' + phone.mac.toUpperCase()] = {
-            legacy_sip_mode: true,
-            phone_name: phone.name,
-            phone_extension: phone.extension,
-            phone_extension_password: generateRandomPassword(),
-            sccp: false,
-            mac_addr: phone.mac.toUpperCase()
-        };
-    
-        const x = parseInt(pos.split(',')[0]);
-        const y = parseInt(pos.split(',')[1]);
-        const sorted = findFurthestAway(map, x, y);
-    
-        let listPos = 0;
-        for(let i = 2; i < 9; i++) {
-            if(listPos < sorted.length) {
-                const peerPhone = map[sorted[listPos]];
-                doc.all.children[phone.type].hosts['SEP' + phone.mac.toUpperCase()]['line_' + i + '_name'] = peerPhone.name;
-                doc.all.children[phone.type].hosts['SEP' + phone.mac.toUpperCase()]['line_' + i + '_extension'] = peerPhone.extension;
-                listPos++;
-            }
+
+        if (!(phone.name in extensions)) {
+            console.error("Missing " + phone.name)
+            continue;
         }
+
+        doc.all.children["phones"].hosts['SEP' + phone.mac.toUpperCase()] = mode.getHostConfig(payload, extensions, pos, phone);
     }
 
-    fs.writeFileSync('./ansible/ansible.yaml', yaml.dump(doc));
+    fs.writeFileSync(`./ansible/${modeName}.yaml`, yaml.dump(doc));
 }
